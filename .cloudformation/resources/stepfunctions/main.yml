@@ -1,0 +1,12 @@
+name: ProcessShoppingtQueue
+events:
+  - eventBridge:
+      eventBusName: ${self:custom.busEventName}
+      event:
+        source:
+          - "bvm.process"
+definition:
+  Comment: Start processing in state machine
+  StartAt: "createPerson"
+  States:
+    ${file(.cloudformation/resources/stepfunctions/states_machine.js)}

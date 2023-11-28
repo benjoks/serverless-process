@@ -1,0 +1,56 @@
+service: sls-process-shop
+frameworkVersion: '3.29.0'
+
+custom:
+  service: sls-process
+  prefix: ${self:service}-${self:provider.stage}
+  busEventName: input-data-serverless-process
+  S3_BUCKET: ${file(${self:provider.stage}.yml):S3_BUCKET}
+  ARN_PREFIX_LAMBDAS: ${file(${self:provider.stage}.yml):ARN_PREFIX_LAMBDAS}
+  pythonRequirements:
+    dockerizePip: non-linux
+
+provider:
+  httpApi:
+    payload: '2.0'
+    id: ${file(${self:provider.stage}.yml):ID_API}
+  name: aws
+  runtime: python3.7
+  region: ${file(${self:provider.stage}.yml):REGION}
+  stage: ${opt:stage, 'dev'}
+  versionFunctions: false
+  stackTags:
+    "Proyecto": "BVM"
+  deploymentBucket:
+    name: ${file(${self:provider.stage}.yml):DEPLOYMENT_BUCKET}
+  environment:
+    ID_API: ${file(${self:provider.stage}.yml):ID_API}
+    TABLA_SQS_PAYLOAD: ${file(${self:provider.stage}.yml):TABLA_SQS_PAYLOAD}
+    TABLA_NUMSQS_PROCESS: ${file(${self:provider.stage}.yml):TABLA_NUMSQS_PROCESS}
+    ARN_STATE: ${file(${self:provider.stage}.yml):ARN_STATE}
+    URL_QUEUE: ${file(${self:provider.stage}.yml):URL_QUEUE}
+    URL_BASE_PERSONAS: ${file(${self:provider.stage}.yml):URL_BASE_PERSONAS}
+    REGION_NAME_BY_STAGE: ${self:provider.region}
+    URL_AUTH: ${file(${self:provider.stage}.yml):URL_AUTH}
+    CLIENT_ID: ${file(${self:provider.stage}.yml):CLIENT_ID}
+    CLIENT_SECRET: ${file(${self:provider.stage}.yml):CLIENT_SECRET}
+    AUDIENCE: ${file(${self:provider.stage}.yml):AUDIENCE}
+  iam:
+    role:
+      statements: ${file(.cloudformation/iam/iam_policies.yml)}
+
+functions:
+  ${file(.cloudformation/resources/lambda/functions.yml)}
+
+stepFunctions:
+  stateMachines:
+    ProcessShoppingtQueue:
+      ${file(.cloudformation/resources/stepfunctions/main.yml)}
+
+resources:
+  - ${file(.cloudformation/resources/resources.yml)}
+
+plugins:
+- serverless-python-requirements
+- serverless-step-functions
+- serverless-plugin-include-dependencies

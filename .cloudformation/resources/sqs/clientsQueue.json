@@ -1,0 +1,7 @@
+{
+  "Type" : "AWS::SQS::Queue",
+  "Properties" : {
+      "QueueName" : "${self:custom.prefix}-clientsQueue",
+      "MessageRetentionPeriod" : 1209600
+  }
+}

@@ -1,0 +1,13 @@
+Resources:
+# Dynamo
+  SqsPayload: ${file(.cloudformation/resources/dynamo/sqs_payload.js)}
+  NumSqsToProcess: ${file(.cloudformation/resources/dynamo/num_sqs_process.js)}
+ # Execution role para poder ejecutar step functions
+  LambdaExecutionRole: ${file(.cloudformation/resources/roles/execution_role.js)}
+  lambdaFunctionSG: ${file(.cloudformation/resources/security_group/lambda_function_sg.js)}
+  #Event
+  RequestBridge: ${file(.cloudformation/resources/eventbridge/eventbridge.js)}
+  # S3
+  #ProcessBucketS3: ${file(.cloudformation/resources/s3/s3_bucket_file.js)}
+  # SQS
+  ClientsQueue: ${file(.cloudformation/resources/sqs/clientsQueue.json)}

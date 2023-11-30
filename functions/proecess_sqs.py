@@ -32,9 +32,9 @@ def handler(event,context):
         logger.info("SQS procesada: %s", (x+1))
         logger.info("response %s", response)
         if "Messages" in response:
-            res = response["Messages"][0]["Body"]
-            body = json.loads(res.replace('\\n', '\n').replace('\\"', '"').replace('"{', '{').replace('}"', '}'))
-            logger.info("body %s", body)
+            body = json.loads(response["Messages"][0]["Body"])
+            logger.info("body %s", type(body))
+            logger.info("response %s", type(body["message"]))
             send_to_statemachine(json.dumps(body["message"]))
             receipt_handle = response["Messages"][0]["ReceiptHandle"]
             response_delete = sqs.delete_message(
@@ -48,7 +48,7 @@ def handler(event,context):
         x = x + 1
     return "Fin"
 
-def send_to_statemachine(body):
+def send_to_statemachine(body : str):
     logger.info(body)
     logger.info(ARN_STATE)
     message_body = body

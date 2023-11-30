@@ -26,8 +26,9 @@ def handler(message, context):
         
         db_response = write_in_dynamo_sqs_payload(body)
         if(db_response["ResponseMetadata"]["HTTPStatusCode"] == 200 or 201):
+            print("Tipo body es",type(message["body"]))
             payload = { "isfile":1,
-                "message":message["body"]
+                "message":json.loads(message["body"])
             }
             response = enviar_to_sqs(payload)
             logger.info(json.dumps(response))
